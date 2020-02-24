@@ -1,0 +1,390 @@
+Enter password: ********
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 11
+Server version: 10.2.8-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2017, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| test               |
++--------------------+
+4 rows in set (0.00 sec)
+
+MariaDB [(none)]> create database BidvestBank;
+Query OK, 1 row affected (0.00 sec)
+
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| bidvestbank        |
+| information_schema |
+| mysql              |
+| performance_schema |
+| test               |
++--------------------+
+5 rows in set (0.00 sec)
+
+MariaDB [(none)]> use bidvestbank
+Database changed
+MariaDB [bidvestbank]> create table BankBranch(
+    -> branch_name varchar(20) NOT NULL,
+    -> branch_city varchar(20) NOT NULL,
+    -> assets double,
+    -> Primary Key(branch_name)
+    -> );
+Query OK, 0 rows affected (0.43 sec)
+
+MariaDB [bidvestbank]> create table Customer(
+    -> customer_name varchar(255) NOT NULL,
+    -> customer_street varchar(255) NOT NULL,
+    -> customer_city varchar(255),
+    -> Primary Key(customer_name)
+    -> );
+Query OK, 0 rows affected (0.34 sec)
+
+MariaDB [bidvestbank]> create table CustomerAccount(
+    -> customer_account varchar(5) NOT NULL,
+    -> branch_name varchar(20) NOT NULL,
+    -> balance double,
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 4
+MariaDB [bidvestbank]> create table CustomerAccount(
+    -> account_number varchar(5) NOT NULL,
+    -> branch_name varchar(20) NOT NULL,
+    -> balance double,
+    -> Primary Key(account_number),
+    -> Foreign Key(branch_name) References BankBranch(branch_name)
+    -> );
+Query OK, 0 rows affected (0.28 sec)
+
+MariaDB [bidvestbank]> create table Loan(
+    -> loan_number varchar(5) NOT NULL,
+    -> branch_name varchar(20) NOT NULL,
+    -> amount double,
+    -> Primary Key(loan_number),
+    -> Foreign Key(branch_name) References BankBranch(branch_name)
+    -> );
+Query OK, 0 rows affected (0.27 sec)
+
+MariaDB [bidvestbank]> create table Depositor(
+    -> customer_name varchar(255) NOT NULL,
+    -> account_number varchar(5) NOT NULL,
+    -> Foreign Key(customer_name) References Customer(customer_name),
+    -> Foreign Key(account_number) References CustomerAccount(account_number)
+    -> );
+Query OK, 0 rows affected (0.25 sec)
+
+MariaDB [bidvestbank]> create table Borrower(
+    -> customer_name varchar(20) NOT NULL,
+    -> loan_number varchar(5) NOT NULL,
+    -> Primary Key(customer_name),
+    -> Foreign Key(customer_name) References Customer(customer_name),
+    -> Foreign Key(loan_number) References Loan(loan_number)
+    -> );
+Query OK, 0 rows affected (0.25 sec)
+
+MariaDB [bidvestbank]> create table Employee(
+    -> employee_name varchar(255) NOT NULL,
+    -> branch_name varchar(20) NOT NULL,
+    -> salary double,
+    -> Primary Key(employee_name),
+    -> Foreign Key(branch_name) References BankBranch(branch_name)
+    -> );
+Query OK, 0 rows affected (0.41 sec)
+
+MariaDB [bidvestbank]> desc bidvestbank;
+ERROR 1146 (42S02): Table 'bidvestbank.bidvestbank' doesn't exist
+MariaDB [bidvestbank]> insert into CustomerAccount values('A-5324','Newtown',500);
+ERROR 1406 (22001): Data too long for column 'account_number' at row 1
+MariaDB [bidvestbank]>  insert into CustomerAccount values('A-532','Newtown',500);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`bidvestbank`.`customeraccount`, CONSTRAINT `customeraccount_ibfk_1` FOREIGN KEY (`branch_name`) REFERENCES `bankbranch` (`branch_name`))
+MariaDB [bidvestbank]> insert into BankBranch values('Midrand','Johannesburg',7100000);
+Query OK, 1 row affected (0.09 sec)
+
+MariaDB [bidvestbank]> insert into BankBranch values('Newtown','Johannesburg',9000000);
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into BankBranch values('Mabopane','Pretoria',400000);
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into BankBranch values('Belgravia','Kimberly',3700000);
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into BankBranch values('Sunnyside','Pretoria',1700000);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into BankBranch values('Amanzintoti','Durban',300000);
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into BankBranch values('Universitas','Bloemfontein',2100000);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into BankBranch values('Mamelodi','Pretoria',8000000);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Modise','Spring','George');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Brooks','Senator','Johannesburg');
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Jooste','North','Kimberly');
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Lombard','Sand Hill','Nelspruit');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Mokwena','Walnut','Port-Elizabeth');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Johnson','Alma','Bloemfontein');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Zwane','Main','Mafikeng');
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Lindsay','Park','George');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Smith','North','Kimberly');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Dlamini','Putnam','Port-Elizabeth');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Customer values('Williams','Nassau','Giyane');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into CustomerAccount values('A-532','Newtown',500);
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into CustomerAccount values('A-562','Sunnyside',400);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into CustomerAccount values('A-779','Midrand',900);
+Query OK, 1 row affected (0.05 sec)
+
+MariaDB [bidvestbank]> insert into CustomerAccount values('A-446','Mabopane',700);
+Query OK, 1 row affected (0.06 sec)
+
+MariaDB [bidvestbank]> insert into CustomerAccount values('A-354','Midrand',750);
+Query OK, 1 row affected (0.10 sec)
+
+MariaDB [bidvestbank]> insert into CustomerAccount values('A-345','Universitas',700);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into CustomerAccount values('A-254','Mamelodi',350);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Loan values('L-11','Mamelodi',900);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Loan values('L-14','Newtown',1500);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Loan values('L-15','Sunnyside',1500);
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into Loan values('L-16','Sunnyside',1300);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Loan values('L-17','Newtown',1000);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Loan values('L-23','Universitas',2000);
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into Loan values('L-93','Mabopane',500);
+Query OK, 1 row affected (0.04 sec)
+
+MariaDB [bidvestbank]> insert into Depositor values('Johnson','A-5624');
+ERROR 1406 (22001): Data too long for column 'account_number' at row 1
+MariaDB [bidvestbank]> insert into Depositor values('Johnson','A-562');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Depositor values('Johnson','A-562');
+Query OK, 1 row affected (0.05 sec)
+
+MariaDB [bidvestbank]> insert into Depositor values('Johnson','A-779');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Depositor values('Zwane','A-354');
+Query OK, 1 row affected (0.09 sec)
+
+MariaDB [bidvestbank]> insert into Depositor values('Lindsay','A-345');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Depositor values('Smith','A-446');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Depositor values('Dlamini','A-254');
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into Borrower values('Modise','L-16');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Borrower values('Jooste','L-93');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Borrower values('Johnson','L-15');
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into Borrower values('Jackson','L-14');
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`bidvestbank`.`borrower`, CONSTRAINT `borrower_ibfk_1` FOREIGN KEY (`customer_name`) REFERENCES `customer` (`customer_name`))
+MariaDB [bidvestbank]> insert into Borrower values('Jackson','L-14');
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`bidvestbank`.`borrower`, CONSTRAINT `borrower_ibfk_1` FOREIGN KEY (`customer_name`) REFERENCES `customer` (`customer_name`))
+MariaDB [bidvestbank]> insert into Borrower values('Zwane','L-17');
+Query OK, 1 row affected (0.09 sec)
+
+MariaDB [bidvestbank]> insert into Borrower values('Smith','L-11');
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Borrower values('Smith','L-23');
+ERROR 1062 (23000): Duplicate entry 'Smith' for key 'PRIMARY'
+MariaDB [bidvestbank]> insert into Borrower values('Williams','L-17');
+Query OK, 1 row affected (0.08 sec)
+
+MariaDB [bidvestbank]> insert into Employee values('Modise','Sunnyside',1500);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Employee values('Brown','Sunnyside',1300);
+Query OK, 1 row affected (0.04 sec)
+
+MariaDB [bidvestbank]> insert into Employee values('Gopal','Sunnyside',5300);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Employee values('Johnson','Newtown',1500);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Employee values('Loreena','Newtown',1300);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Employee values('Peterson','Newtown',2500);
+Query OK, 1 row affected (0.07 sec)
+
+MariaDB [bidvestbank]> insert into Employee values('Rao','Austin',1500);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`bidvestbank`.`employee`, CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`branch_name`) REFERENCES `bankbranch` (`branch_name`))
+MariaDB [bidvestbank]> insert into Employee values('Sato','Austin',1600);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`bidvestbank`.`employee`, CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`branch_name`) REFERENCES `bankbranch` (`branch_name`))
+MariaDB [bidvestbank]> SELECT * FROM CustomerAccounts WHERE balance < 700;
+ERROR 1146 (42S02): Table 'bidvestbank.customeraccounts' doesn't exist
+MariaDB [bidvestbank]> SELECT * FROM CustomerAccount WHERE balance < 700;
++----------------+-------------+---------+
+| account_number | branch_name | balance |
++----------------+-------------+---------+
+| A-254          | Mamelodi    |     350 |
+| A-532          | Newtown     |     500 |
+| A-562          | Sunnyside   |     400 |
++----------------+-------------+---------+
+3 rows in set (0.07 sec)
+
+MariaDB [bidvestbank]> SELECT * FROM Customer WHERE customer_city = 'Johannesburg';
++---------------+-----------------+---------------+
+| customer_name | customer_street | customer_city |
++---------------+-----------------+---------------+
+| Brooks        | Senator         | Johannesburg  |
++---------------+-----------------+---------------+
+1 row in set (0.00 sec)
+
+MariaDB [bidvestbank]> SELECT * FROM Employee WHERE salary > 1500 && branch_name != 'Newtown';
++---------------+-------------+--------+
+| employee_name | branch_name | salary |
++---------------+-------------+--------+
+| Gopal         | Sunnyside   |   5300 |
++---------------+-------------+--------+
+1 row in set (0.08 sec)
+
+MariaDB [bidvestbank]> SELECT Max(assets) AS "Largest Assets" FROM BankBranch;
++----------------+
+| Largest Assets |
++----------------+
+|        9000000 |
++----------------+
+1 row in set (0.00 sec)
+
+MariaDB [bidvestbank]> SELECT * FROM Empoyee WHERE branch_name = 'Sunnyside';
+ERROR 1146 (42S02): Table 'bidvestbank.empoyee' doesn't exist
+MariaDB [bidvestbank]>  SELECT * FROM Employee WHERE branch_name = 'Sunnyside';
++---------------+-------------+--------+
+| employee_name | branch_name | salary |
++---------------+-------------+--------+
+| Brown         | Sunnyside   |   1300 |
+| Gopal         | Sunnyside   |   5300 |
+| Modise        | Sunnyside   |   1500 |
++---------------+-------------+--------+
+3 rows in set (0.00 sec)
+
+MariaDB [bidvestbank]> SELECT * FROM Borrower;
++---------------+-------------+
+| customer_name | loan_number |
++---------------+-------------+
+| Smith         | L-11        |
+| Johnson       | L-15        |
+| Modise        | L-16        |
+| Williams      | L-17        |
+| Zwane         | L-17        |
+| Jooste        | L-93        |
++---------------+-------------+
+6 rows in set (0.00 sec)
+
+MariaDB [bidvestbank]> SELECT account_number FROM CustomerAccount WHERE balance > 900;
+Empty set (0.00 sec)
+
+MariaDB [bidvestbank]> SELECT * FROM CustomerAccount WHERE balance 900;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '900' at line 1
+MariaDB [bidvestbank]> SELECT * FROM CustomerAccount WHERE balance > 900;
+Empty set (0.00 sec)
+
+MariaDB [bidvestbank]> SELECT * FROM CustomerAccount;
++----------------+-------------+---------+
+| account_number | branch_name | balance |
++----------------+-------------+---------+
+| A-254          | Mamelodi    |     350 |
+| A-345          | Universitas |     700 |
+| A-354          | Midrand     |     750 |
+| A-446          | Mabopane    |     700 |
+| A-532          | Newtown     |     500 |
+| A-562          | Sunnyside   |     400 |
+| A-779          | Midrand     |     900 |
++----------------+-------------+---------+
+7 rows in set (0.00 sec)
+
+MariaDB [bidvestbank]> SELECT * From CustomerAccount WHERE balance > 600;
++----------------+-------------+---------+
+| account_number | branch_name | balance |
++----------------+-------------+---------+
+| A-345          | Universitas |     700 |
+| A-354          | Midrand     |     750 |
+| A-446          | Mabopane    |     700 |
+| A-779          | Midrand     |     900 |
++----------------+-------------+---------+
+4 rows in set (0.00 sec)
+
+MariaDB [bidvestbank]> SELECT * From CustomerAccount WHERE branch_name = "Newtown" AND balance > 600;
+Empty set (0.06 sec)
+
+MariaDB [bidvestbank]> SELECT * From BankBranch;
++-------------+--------------+---------+
+| branch_name | branch_city  | assets  |
++-------------+--------------+---------+
+| Amanzintoti | Durban       |  300000 |
+| Belgravia   | Kimberly     | 3700000 |
+| Mabopane    | Pretoria     |  400000 |
+| Mamelodi    | Pretoria     | 8000000 |
+| Midrand     | Johannesburg | 7100000 |
+| Newtown     | Johannesburg | 9000000 |
+| Sunnyside   | Pretoria     | 1700000 |
+| Universitas | Bloemfontein | 2100000 |
++-------------+--------------+---------+
+8 rows in set (0.00 sec)
+
+MariaDB [bidvestbank]>
